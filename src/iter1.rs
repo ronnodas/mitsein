@@ -19,8 +19,9 @@ use core::result;
 use either::Either;
 #[cfg(feature = "itertools")]
 use itertools::{
-    ChunkBy, Dedup, DedupBy, DedupByWithCount, DedupWithCount, Group, Groups, Itertools, MapInto,
-    MapOk, Merge, MergeBy, MinMaxResult, PadUsing, Product, Update, WithPosition, ZipLongest,
+    ChunkBy, Coalesce, Dedup, DedupBy, DedupByWithCount, DedupWithCount, Group, Groups, Itertools,
+    MapInto, MapOk, Merge, MergeBy, MinMaxResult, PadUsing, Product, Update, WithPosition,
+    ZipLongest,
 };
 #[cfg(feature = "rayon")]
 use rayon::iter::{
@@ -1258,6 +1259,14 @@ where
         NonEmpty {
             items: self.items.chunk_by1(key),
         }
+    }
+
+    pub fn coalesce<F>(self, f: F) -> Iterator1<Coalesce<I, F>>
+    where
+        F: FnMut(I::Item, I::Item) -> result::Result<I::Item, (I::Item, I::Item)>,
+    {
+        // SAFETY: This combinator function cannot reduce the cardinality of the iterator to zero.
+        unsafe { self.and_then_unchecked(|iter| iter.coalesce(f)) }
     }
 }
 
