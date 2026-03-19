@@ -184,9 +184,9 @@ APIs](#separation-of-concerns), such as `vec1::Segment::swap_drain`.
 
 Mitsein provides comprehensive coverage of ordered collections and container
 APIs in `core` and `alloc`. This notably includes `slice`, `str`, `BTreeMap`,
-`BTreeSet`, `Box`, and `Arc`. Non-empty types also implement standard traits
-like their counterparts. The [`nonempty`] and [`vec1`] crates lack support for
-primitive types like `slice` and collections other than `Vec`.
+`BTreeSet`, `Box`, `Arc`, and ranges. Non-empty types also implement standard
+traits like their counterparts. The [`nonempty`] and [`vec1`] crates lack
+support for primitive types like `slice` and collections other than `Vec`.
 
 Non-empty counterparts for iterators and many standard conversions, such as
 between `Vec1` and `Arc1`, are also provided. These are crucial for maintaining

@@ -172,6 +172,20 @@
 //!
 //! See the [`array1`] module.
 //!
+//! ## Ranges
+//!
+//! This crate provides the following non-empty bounded range types:
+//!
+//! - [`Range1`]
+//! - [`RangeInclusive1`]
+//!
+//! Like collections, non-empty ranges are represented with the [`NonEmpty`] type constructor.
+//! Non-empty range types implement the [`IntoIterator`] and [`IntoIterator1`] traits. These types
+//! avoid what is largely seen as a design mistake in core range APIs: they do **not** implement
+//! [`Iterator`].
+//!
+//! See the [`ops1`] module.
+//!
 //! # Exception and Segmentation
 //!
 //! [`Except`]s and [`Segment`]s are views over a subset of a collection that can mutate both the
@@ -244,10 +258,13 @@
 //! [`Except`]: crate::except
 //! [`heapless`]: https://crates.io/crates/heapless
 //! [`indexmap`]: https://crates.io/crates/indexmap
+//! [`IntoIterator1`]: crate::iter1::IntoIterator1
 //! [`Iterator1`]: crate::iter1::Iterator1
 //! [`Iterator1::map`]: crate::iter1::Iterator1::map
 //! [`itertools`]: https://crates.io/crates/itertools
 //! [`ParallelIterator1`]: crate::iter1::ParallelIterator1
+//! [`Range1`]: crate::ops1::Range1
+//! [`RangeInclusive1`]: crate::ops1::RangeInclusive1
 //! [`rayon`]: https://crates.io/crates/rayon
 //! [`RcSlice1Ext`]: crate::rc1::RcSlice1Ext
 //! [`RcStr1Ext`]: crate::rc1::RcStr1Ext
@@ -339,6 +356,7 @@ pub mod heapless;
 pub mod index_map1;
 pub mod index_set1;
 pub mod iter1;
+pub mod ops1;
 pub mod rc1;
 pub mod segment;
 pub mod slice1;

@@ -11,6 +11,7 @@ use core::iter::{
     self, Chain, Cloned, Copied, Cycle, Enumerate, FlatMap, Flatten, Inspect, Map, Peekable,
     Repeat, RepeatN, RepeatWith, Rev, Skip, StepBy, Successors, Take, Zip,
 };
+use core::net::{Ipv4Addr, Ipv6Addr};
 use core::num::NonZeroUsize;
 use core::option;
 use core::result;
@@ -37,6 +38,7 @@ use {
     std::collections::HashMap,
 };
 
+use crate::cmp::UnsafeOrd;
 use crate::safety::OptionExt as _;
 #[cfg(any(all(feature = "alloc", feature = "itertools"), feature = "rayon"))]
 use crate::vec1::Vec1;
@@ -472,6 +474,41 @@ where
         }
     }
 }
+
+/// Types that can be used in APIs where consistent stepping is required for memory safety.
+///
+/// # Safety
+///
+/// Types that implement this trait must exhibit consistent behavior as described for the unstable
+/// [`Step`] trait. [`Step`] is implemented for types with some notion of totally ordered successor
+/// and predecessor values, most notably for bound types in ranges like [`usize`]. Unlike [`Step`],
+/// **inconsistent implementations of [`Step`] and also this trait are unsound**. Bounds on this
+/// trait indicate that inconsistent [`Step`] implementations are not memory safe.
+///
+/// [`Step`]: core::iter::Step
+#[diagnostic::on_unimplemented(
+    message = "`{Self}` may not implement consistent stepping",
+    label = "types used here must implement consistent stepping for soundness",
+    note = "prefer primitive integer types like `usize` in non-empty ranges",
+    note = "see the `core::iter::Step` trait"
+)]
+pub unsafe trait UnsafeStep: Clone + Sized + UnsafeOrd {}
+
+unsafe impl UnsafeStep for char {}
+unsafe impl UnsafeStep for i8 {}
+unsafe impl UnsafeStep for i16 {}
+unsafe impl UnsafeStep for i32 {}
+unsafe impl UnsafeStep for i64 {}
+unsafe impl UnsafeStep for i128 {}
+unsafe impl UnsafeStep for isize {}
+unsafe impl UnsafeStep for u8 {}
+unsafe impl UnsafeStep for u16 {}
+unsafe impl UnsafeStep for u32 {}
+unsafe impl UnsafeStep for u64 {}
+unsafe impl UnsafeStep for u128 {}
+unsafe impl UnsafeStep for usize {}
+unsafe impl UnsafeStep for Ipv4Addr {}
+unsafe impl UnsafeStep for Ipv6Addr {}
 
 #[cfg(feature = "itertools")]
 #[cfg_attr(docsrs, doc(cfg(feature = "itertools")))]
