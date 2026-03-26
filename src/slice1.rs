@@ -21,10 +21,59 @@ use {alloc::borrow::ToOwned, alloc::vec::Vec};
 use crate::iter1::{IntoIterator1, Iterator1};
 #[cfg(feature = "rayon")]
 use crate::iter1::{IntoParallelIterator1, ParallelIterator1};
+use crate::ops1::{Range1, RangeInclusive1};
 use crate::safety;
 use crate::{Cardinality, EmptyError, FromMaybeEmpty, MaybeEmpty, NonEmpty};
 #[cfg(feature = "alloc")]
 use {crate::boxed1::BoxedSlice1, crate::vec1::Vec1};
+
+impl<T> Index<Range1<usize>> for [T] {
+    type Output = Slice1<T>;
+
+    fn index(&self, at: Range1<usize>) -> &Self::Output {
+        let items = self.index(at.into_range());
+        // SAFETY: `at` is bounded and non-empty. Given that and the `SliceIndex` implementation
+        //         for slices, it is impossible for `SliceIndex` and therefore `Index` to yield an
+        //         empty subslice. Note too that if the range is out of bounds, then `SliceIndex`
+        //         yeilds `None` and `Index` panics, so this line is never reached.
+        unsafe { Slice1::from_slice_unchecked(items) }
+    }
+}
+
+impl<T> Index<RangeInclusive1<usize>> for [T] {
+    type Output = Slice1<T>;
+
+    fn index(&self, at: RangeInclusive1<usize>) -> &Self::Output {
+        let items = self.index(at.into_range_inclusive());
+        // SAFETY: `at` is bounded and non-empty. Given that and the `SliceIndex` implementation
+        //         for slices, it is impossible for `SliceIndex` and therefore `Index` to yield an
+        //         empty subslice. Note too that if the range is out of bounds, then `SliceIndex`
+        //         yeilds `None` and `Index` panics, so this line is never reached.
+        unsafe { Slice1::from_slice_unchecked(items) }
+    }
+}
+
+impl<T> IndexMut<Range1<usize>> for [T] {
+    fn index_mut(&mut self, at: Range1<usize>) -> &mut Self::Output {
+        let items = self.index_mut(at.into_range());
+        // SAFETY: `at` is bounded and non-empty. Given that and the `SliceIndex` implementation
+        //         for slices, it is impossible for `SliceIndex` and therefore `Index` to yield an
+        //         empty subslice. Note too that if the range is out of bounds, then `SliceIndex`
+        //         yeilds `None` and `Index` panics, so this line is never reached.
+        unsafe { Slice1::from_mut_slice_unchecked(items) }
+    }
+}
+
+impl<T> IndexMut<RangeInclusive1<usize>> for [T] {
+    fn index_mut(&mut self, at: RangeInclusive1<usize>) -> &mut Self::Output {
+        let items = self.index_mut(at.into_range_inclusive());
+        // SAFETY: `at` is bounded and non-empty. Given that and the `SliceIndex` implementation
+        //         for slices, it is impossible for `SliceIndex` and therefore `Index` to yield an
+        //         empty subslice. Note too that if the range is out of bounds, then `SliceIndex`
+        //         yeilds `None` and `Index` panics, so this line is never reached.
+        unsafe { Slice1::from_mut_slice_unchecked(items) }
+    }
+}
 
 unsafe impl<T> MaybeEmpty for [T] {
     fn cardinality(&self) -> Option<Cardinality<(), ()>> {

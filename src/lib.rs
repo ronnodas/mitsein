@@ -184,6 +184,9 @@
 //! avoid what is largely seen as a design mistake in core range APIs: they do **not** implement
 //! [`Iterator`].
 //!
+//! Non-empty ranges can be used to index slices and types that can be trivially coerced or
+//! converted to slices. The output of slicing by a non-empty range is a [`Slice1`].
+//!
 //! See the [`ops1`] module.
 //!
 //! # Exception and Segmentation

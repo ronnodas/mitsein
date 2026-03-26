@@ -30,6 +30,7 @@ use crate::boxed1::{BoxedSlice1, BoxedSlice1Ext as _};
 use crate::iter1::{self, Extend1, FromIterator1, IntoIterator1, Iterator1};
 #[cfg(feature = "rayon")]
 use crate::iter1::{FromParallelIterator1, IntoParallelIterator1, ParallelIterator1};
+use crate::ops1::{Range1, RangeInclusive1};
 use crate::safety::{self, NonZeroExt as _, OptionExt as _};
 use crate::segment::range::{self, IndexRange, Intersect, Project, RangeError};
 use crate::segment::{self, ByRange, ByTail, Segmentation};
@@ -92,6 +93,34 @@ impl<T> Extend1<T> for Vec<T> {
         // SAFETY: The input iterator `items` is non-empty and `extend` either pushes one or more
         //         items or panics, so `self` must be non-empty here.
         unsafe { Vec1::from_maybe_empty_unchecked(self) }
+    }
+}
+
+impl<T> Index<Range1<usize>> for Vec<T> {
+    type Output = Slice1<T>;
+
+    fn index(&self, at: Range1<usize>) -> &Self::Output {
+        self.as_slice().index(at)
+    }
+}
+
+impl<T> Index<RangeInclusive1<usize>> for Vec<T> {
+    type Output = Slice1<T>;
+
+    fn index(&self, at: RangeInclusive1<usize>) -> &Self::Output {
+        self.as_slice().index(at)
+    }
+}
+
+impl<T> IndexMut<Range1<usize>> for Vec<T> {
+    fn index_mut(&mut self, at: Range1<usize>) -> &mut Self::Output {
+        self.as_mut_slice().index_mut(at)
+    }
+}
+
+impl<T> IndexMut<RangeInclusive1<usize>> for Vec<T> {
+    fn index_mut(&mut self, at: RangeInclusive1<usize>) -> &mut Self::Output {
+        self.as_mut_slice().index_mut(at)
     }
 }
 
