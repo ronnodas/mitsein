@@ -395,6 +395,37 @@ where
     }
 }
 
+#[cfg(feature = "itertools")]
+impl<'a, K, I, F> IntoIterator for &'a NonEmpty<ChunkBy1<K, I, F>>
+where
+    I: Iterator,
+    I::Item: 'a,
+    F: FnMut(&I::Item) -> K,
+    K: PartialEq,
+{
+    type Item = (K, Iterator1<Group<'a, K, I, F>>);
+
+    type IntoIter = Groups1<'a, K, I, F>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.items.into_iter()
+    }
+}
+
+#[cfg(feature = "itertools")]
+impl<'a, K, I, F> IntoIterator1 for &'a NonEmpty<ChunkBy1<K, I, F>>
+where
+    I: Iterator,
+    I::Item: 'a,
+    F: FnMut(&I::Item) -> K,
+    K: PartialEq,
+{
+    fn into_iter1(self) -> Iterator1<Self::IntoIter> {
+        // SAFETY: Since `self.items` is non-empty, it yields at least one group.
+        unsafe { Iterator1::from_iter_unchecked(self) }
+    }
+}
+
 // The input type parameter `K` is unused in this trait, but is required to prevent a coherence
 // error. This trait is implemented for any `Iterator` type `I` and for `iter1::Result<I>`.
 // However, `core` may implement `Iterator` for `core::Result` and that presents a conflict. This
@@ -1230,6 +1261,17 @@ where
         // SAFETY: Since both the inputs are non-empty, the output of this combinator function is
         // non-empty.
         unsafe { self.and_then_unchecked(|items| items.cartesian_product(other)) }
+    }
+
+    pub fn chunk_by1<K, F>(self, key: F) -> NonEmpty<ChunkBy1<K, I, F>>
+    where
+        I: Sized,
+        F: FnMut(&I::Item) -> K,
+        K: PartialEq,
+    {
+        NonEmpty {
+            items: self.items.chunk_by1(key),
+        }
     }
 }
 
