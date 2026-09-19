@@ -452,6 +452,9 @@ use core::fmt::{self, Debug, Display, Formatter};
 use core::mem;
 use core::num::NonZeroUsize;
 
+#[cfg(feature = "itertools")]
+pub use itertools;
+
 pub use Cardinality::{Many, One};
 
 const EMPTY_ERROR_MESSAGE: &str = "failed to construct non-empty value: no items";
